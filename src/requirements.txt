@@ -1,0 +1,9 @@
+Flask
+Flask-Cors
+requests
+mysqlclient
+mysql-connector-python
+Flask-SocketIO == 5
+python-SocketIO
+python-engineio
+Flask-Session
