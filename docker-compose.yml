@@ -11,6 +11,8 @@ services:
       MYSQL_DATABASE: app
       MYSQL_ROOT_HOST: '%'
     command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+    networks:
+      - app_network
   appserver:
     build:
       context: ./src/
@@ -26,3 +28,9 @@ services:
     tty: true
     depends_on:
       - db
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge

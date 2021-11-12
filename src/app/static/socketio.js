@@ -35,5 +35,4 @@ $(document).ready(function(){
         chat.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
-
 });

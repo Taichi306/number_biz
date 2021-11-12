@@ -15,24 +15,71 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
 
+# データベースを操作する関数
+def cdb():
+    db = mysql.connector.connect(
+        user='root',
+        password='password',
+        host='db',
+        database='app'
+    )
+    return db
+
+
+# join_userを取得する関数 返り値はタプル
+def get_join_user(session):
+    db = cdb()
+    db_room = db.cursor(buffered=True)
+    db_room.execute("SELECT join_user from Room where session_room = %s",(session,))
+    flag_room = db_room.fetchone()
+    return flag_room
+
+
+# join_userに数を足す関数
+def add_join_user(session, flag):
+    db = cdb()
+    session = int(session)
+    if flag:
+        cursor = db.cursor(buffered=True)
+        cursor.execute("INSERT INTO Room (session_room, join_user) values (%s, %s)", (session, 1))
+        db.commit()
+    else:
+        i = get_join_user(session)[0]
+        i += 1
+        cursor = db.cursor(buffered=True)
+        cursor.execute("UPDATE Room SET join_user = %s WHERE session_room = %s", (i, session))
+        db.commit()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'POST':
         room = request.form['room']
         session['room'] = room
-        # # ----------------------------------------------------------------------
-        # session.permanent = True
-        # session.modified = True
-        # app.permanent_session_lifetime = timedelta(minutes=5)
-        # # ----------------------------------------------------------------------
-        return render_template('socket.html', session=session)
+        flag_room = get_join_user(room)
+        if flag_room == None:
+            add_join_user(room, True)
+        else:
+            add_join_user(room, False)
+        return redirect('/wait')
     else:
         return render_template('main.html')
+
+
+@app.route('/wait', methods=['POST', 'GET'])
+def wait():
+    # join_userが2になったらsocketに移行させる
+    num_join = get_join_user(int(session['room']))[0]
+    if num_join == 2:
+        return render_template('socket.html')
+    else:
+        return render_template('wait.html', num_join=num_join)
 
 
 @app.route('/socket', methods=['GET', 'POST'])
 def test():
     if (session['room'] is not None):
+
         return render_template('socket.html', session=session)
     else:
         return redirect(url_for('/'))
