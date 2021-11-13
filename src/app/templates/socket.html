@@ -2,22 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/main.css">
     <title>Socket io Test</title>
     <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <h1>Number guessing game</h1>
-    <p>We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer. We'll tell you if your guess was too high or too low.</p>
-
+    <div class="form"></div>
     <ul id="chat"></ul>
     <form id="form" action="">
-      <input id="text" autocomplete="off" /><button>Send</button>
+    <input id="text" autocomplete="off" /><button class="guessSubmit">Send</button>
     </form>
+
 
     <p>session is {session}</p>
     {{session}}
+
+    <div class="form">
+      <label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
+    </div>
+
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
+
 
     <script src="../static/socketio.js"></script>
 </body>
