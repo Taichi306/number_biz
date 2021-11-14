@@ -56,6 +56,7 @@ def main():
     if request.method == 'POST':
         room = request.form['room']
         session['room'] = room
+        session['user_name'] = 0
         flag_room = get_join_user(room)
         if flag_room == None:
             add_join_user(room, True)
@@ -70,7 +71,13 @@ def main():
 def wait():
     # join_userが2になったらsocketに移行させる
     num_join = get_join_user(int(session['room']))[0]
+    if num_join == 1:
+        session['user_name'] = 1
     if num_join == 2:
+        if session['user_name'] == 1:
+            pass
+        else:
+            session['user_name'] = 2
         return render_template('socket.html')
     else:
         return render_template('wait.html', num_join=num_join)
@@ -79,7 +86,6 @@ def wait():
 @app.route('/socket', methods=['GET', 'POST'])
 def test():
     if (session['room'] is not None):
-
         return render_template('socket.html', session=session)
     else:
         return redirect(url_for('/'))
@@ -95,12 +101,8 @@ def join(message):
 @socketio.on('text', namespace='/socket')
 def chat(message):
     room = session['room']
-    emit('message', {'msg': message['msg']}, room=room)
-
-
-@app.route("/game")
-def game():
-    return render_template('source.html')
+    user = session['user_name']
+    emit('message', {'msg': message['msg'], 'user': user}, room=room)
 
 
 if __name__ == '__main__':

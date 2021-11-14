@@ -10,24 +10,19 @@
 
 <body>
 
-    <ul id="chat"></ul>
-    <form id="form" action="">
-<!--        <label for="text">enter a guess</label>-->
-        <input id="text">
-        <input class="guessField" type="hidden" id="input" value="">
-        <button class="guessSubmit">Send</button>
-    </form>
-
     <div class="resultParas">
       <p class="guesses"></p>
       <p class="lastResult"></p>
       <p class="lowOrHi"></p>
     </div>
 
-    <script>
-        var text = document.getElementById("text").value;
-        document.getElementById("text").value = text;
-    </script>
+    <ul id="chat"></ul>
+    <form id="form" action="" class="guessField">
+        <input id="text">
+        <button class="guessSubmit">Send</button>
+    </form>
+
+
     <script src="../static/socketio.js"></script>
 </body>
 </html>
