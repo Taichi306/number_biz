@@ -14,6 +14,9 @@ $(document).ready(function(){
         e.preventDefault();
         if (text.value){
             socket.emit('text', {msg: text.value});
+
+
+
             text.value = '';
         }
     });
@@ -22,8 +25,9 @@ $(document).ready(function(){
         var item = document.createElement('li');
         item.textContent = data['msg'];
         chat.appendChild(item);
-        // window.scrollTo(0, document.body.scrollHeight);
+        window.scrollTo(0, document.body.scrollHeight);
     });
+
 });
 
 let randomNumber = Math.floor(Math.random() * 100) + 1;
@@ -35,10 +39,11 @@ const guessField = document.querySelector('.guessField');
 let guessCount = 1;
 let resetButton;
 
+
 function checkGuess() {
-let userGuess = Number(guessField.value);
-if (guessCount === 1) {
-  guesses.textContent = 'Previous guesses: ';
+    let userGuess = Number(guessField.value);
+    if (guessCount === 1) {
+      guesses.textContent = 'Previous guesses: ';
 }
 
 guesses.textContent += userGuess + ' ';
