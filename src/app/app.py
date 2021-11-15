@@ -51,6 +51,7 @@ def add_join_user(session, flag):
         cursor.execute("UPDATE Room SET join_user = %s WHERE session_room = %s", (i, session))
         db.commit()
 
+
 def show_ans():
     db = cdb()
     show_ans = db.cursor(buffered=True)
@@ -95,6 +96,7 @@ def wait():
 def test():
     db = cdb()
     if (session['room'] is not None):
+        # ランダムナンバーを作成 or 取得する
         _ans = show_ans()[0]
         if _ans == 0:
             answer = random.randint(1, 101)
@@ -104,7 +106,15 @@ def test():
             ans = show_ans()[0]
         else:
             ans = show_ans()[0]
-        return render_template('socket.html', session=session, ans=ans)
+
+        # 最初に入力させるユーザーを選ぶ(後でランダムに選択されるようにする)
+        # 今はuser1に固定
+        session['first'] = 1
+        first = session['first']
+
+        user = session['user_name']
+
+        return render_template('socket.html', session=session, ans=ans, first=first, user=user)
 
     else:
         return redirect(url_for('/'))
@@ -121,7 +131,22 @@ def join(message):
 def chat(message):
     room = session['room']
     user = session['user_name']
-    emit('message', {'msg': message['msg'], 'user': user}, room=room)
+
+    # dbのcount_numを取得する
+    db = cdb()
+    count = db.cursor(buffered=True)
+    count.execute("SELECT count_num from Room where session_room = %s", (room,))
+    count_num = count.fetchone()[0]
+    count_num += 1
+
+    # dbのcount_numに1を加えていく
+    cursor = db.cursor(buffered=True)
+    cursor.execute("UPDATE Room SET count_num = %s WHERE session_room = %s", (count_num, room))
+    db.commit()
+
+
+
+    emit('message', {'msg': message['msg'], 'user': user, 'count_num':count_num}, room=room)
 
 
 if __name__ == '__main__':

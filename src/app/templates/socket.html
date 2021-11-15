@@ -24,9 +24,14 @@
 
     <p>{{ans}}</p>
     <p>{{session}}</p>
+    <p>first user is {{first}}</p>
+    <p>user is {{user}}</p>
+
 
     <script>
-        var ans = JSON.parse('{{ ans | tojson}}');
+        var ans = JSON.parse('{{ ans | tojson }}');
+        var first = JSON.parse('{{ first | tojson }}');
+        var user_s = JSON.parse('{{ user | tojson }}');
     </script>
     <script src="../static/socketio.js"></script>
 
