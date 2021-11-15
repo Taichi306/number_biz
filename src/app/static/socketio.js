@@ -7,7 +7,7 @@ $(document).ready(function(){
     var form = document.getElementById('form');
 
     //-------------------------------------------------------
-    let randomNumber = Math.floor(Math.random() * 100) + 1;
+    let randomNumber = ans;
     const guesses = document.querySelector('.guesses');
     const lastResult = document.querySelector('.lastResult');
     const lowOrHi = document.querySelector('.lowOrHi');
@@ -98,6 +98,3 @@ $(document).ready(function(){
     }
     //-------------------------------------------------------
 });
-
-
-

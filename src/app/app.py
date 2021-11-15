@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, url_for
 from datetime import timedelta
 from flask_socketio import SocketIO, join_room, leave_room, emit
 import mysql.connector
+import random
 
 app = Flask(__name__)
 
@@ -41,7 +42,7 @@ def add_join_user(session, flag):
     session = int(session)
     if flag:
         cursor = db.cursor(buffered=True)
-        cursor.execute("INSERT INTO Room (session_room, join_user) values (%s, %s)", (session, 1))
+        cursor.execute("INSERT INTO Room (session_room, join_user, answer) values (%s, %s, %s)", (session, 1, 0))
         db.commit()
     else:
         i = get_join_user(session)[0]
@@ -49,6 +50,13 @@ def add_join_user(session, flag):
         cursor = db.cursor(buffered=True)
         cursor.execute("UPDATE Room SET join_user = %s WHERE session_room = %s", (i, session))
         db.commit()
+
+def show_ans():
+    db = cdb()
+    show_ans = db.cursor(buffered=True)
+    show_ans.execute("SELECT answer FROM Room WHERE session_room = %s", (session['room'],))
+    show_ans = show_ans.fetchone()
+    return show_ans
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -78,15 +86,26 @@ def wait():
             pass
         else:
             session['user_name'] = 2
-        return render_template('socket.html')
+        return redirect('/socket')
     else:
         return render_template('wait.html', num_join=num_join)
 
 
 @app.route('/socket', methods=['GET', 'POST'])
 def test():
+    db = cdb()
     if (session['room'] is not None):
-        return render_template('socket.html', session=session)
+        _ans = show_ans()[0]
+        if _ans == 0:
+            answer = random.randint(1, 101)
+            ans_db = db.cursor(buffered=True)
+            ans_db.execute("UPDATE Room SET answer = %s WHERE session_room = %s", (answer, session['room'],))
+            db.commit()
+            ans = show_ans()[0]
+        else:
+            ans = show_ans()[0]
+        return render_template('socket.html', session=session, ans=ans)
+
     else:
         return redirect(url_for('/'))
 

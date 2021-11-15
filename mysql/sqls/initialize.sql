@@ -20,5 +20,7 @@ CREATE TABLE IF NOT EXISTS Game_result (
 CREATE TABLE IF NOT EXISTS Room (
   id int PRIMARY KEY AUTO_INCREMENT,
   session_room int NOT NULL,
-  join_user int DEFAULT 0
+  join_user int DEFAULT 0,
+  answer int NOT NULL,
+  count_num int DEFAULT 0
 );

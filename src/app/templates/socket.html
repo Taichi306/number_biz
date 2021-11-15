@@ -22,7 +22,13 @@
         <button class="guessSubmit">Send</button>
     </form>
 
+    <p>{{ans}}</p>
+    <p>{{session}}</p>
 
+    <script>
+        var ans = JSON.parse('{{ ans | tojson}}');
+    </script>
     <script src="../static/socketio.js"></script>
+
 </body>
 </html>
