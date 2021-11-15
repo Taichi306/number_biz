@@ -114,7 +114,11 @@ def test():
 
         user = session['user_name']
 
-        return render_template('socket.html', session=session, ans=ans, first=first, user=user)
+        count = db.cursor(buffered=True)
+        count.execute("SELECT count_num FROM Room WHERE session_room = %s", (session['room'],))
+        count = count.fetchone()[0]
+
+        return render_template('socket.html', session=session, ans=ans, first=first, user=user, count=count)
 
     else:
         return redirect(url_for('/'))

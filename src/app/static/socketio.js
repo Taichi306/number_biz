@@ -14,10 +14,11 @@ $(document).ready(function(){
     let guessCount = 1;
     let resetButton;
 
+    let turn = document.querySelector('.turn');
+
     socket.on('connect', function(){
         socket.emit('join', {});
     });
-
 
     form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -31,27 +32,7 @@ $(document).ready(function(){
         let userGuess = Number(data['msg']);
         let count_num = data['count_num'];
         let input_index = 2;
-
-        // 交互に入力させるコード-------------------------------------
-        if (first === user_s) {
-            if (count_num % input_index === 1) {
-                guessField.disabled = false;
-                guessSubmit.disabled = false;
-                checkGuess(userGuess, count_num);
-            } else {
-                guessField.disabled = true;
-                guessSubmit.disabled = true;
-            }
-        } else {
-            if (count_num % input_index === 0) {
-                guessField.disabled = false;
-                guessSubmit.disabled = false;
-                checkGuess(userGuess, count_num);
-            } else {
-                guessField.disabled = true;
-                guessSubmit.disabled = true;
-            }
-        }
+        turn_input(userGuess, count_num, input_index)
 
         // 入力した内容をchatに出す-----------------------------------
         let item = document.createElement('li');
@@ -60,7 +41,33 @@ $(document).ready(function(){
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    // -------------------------------------------------------
+    // 交互に入力させる関数-------------------------------------
+    function turn_input(userGuess, count_num, input_index) {
+        if (first === user_s) {
+            if (count_num % input_index === 1) {
+                turn.textContent = 'My Turn!';
+                guessField.disabled = false;
+                guessSubmit.disabled = false;
+                checkGuess(userGuess, count_num);
+            } else {
+                turn.textContent = "Opponent's Turn!!";
+                guessField.disabled = true;
+                guessSubmit.disabled = true;
+            }
+        } else {
+            if (count_num % input_index === 0) {
+                turn.textContent = 'My Turn!';
+                guessField.disabled = false;
+                guessSubmit.disabled = false;
+                checkGuess(userGuess, count_num);
+            } else {
+                turn.textContent = "Opponent's Turn!!";
+                guessField.disabled = true;
+                guessSubmit.disabled = true;
+            }
+        }
+    }
+
     function checkGuess(userGuess, count_num) {
         if (count_num === 1) {
             guesses.textContent = 'Previous guesses: ';
@@ -113,5 +120,4 @@ $(document).ready(function(){
         lastResult.style.backgroundColor = 'white';
         randomNumber = Math.floor(Math.random() * 100) + 1;
     }
-    //-------------------------------------------------------
 });
