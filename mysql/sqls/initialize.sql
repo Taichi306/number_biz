@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS Room (
   session_room int NOT NULL,
   join_user int DEFAULT 0,
   answer int NOT NULL,
-  count_num int DEFAULT 1
+  count_num int DEFAULT 0
 );

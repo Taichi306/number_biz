@@ -6,7 +6,6 @@ $(document).ready(function(){
     var text = document.getElementById('text');
     var form = document.getElementById('form');
     let randomNumber = ans;
-    const guesses = document.querySelector('.guesses');
     const lastResult = document.querySelector('.lastResult');
     const lowOrHi = document.querySelector('.lowOrHi');
     const guessSubmit = document.querySelector('.guessSubmit');
@@ -29,22 +28,31 @@ $(document).ready(function(){
     });
 
     socket.on('message', function(data){
+        // 交互に入力させる----------------------------------------
         let userGuess = Number(data['msg']);
         let count_num = data['count_num'];
-        let input_index = 2;
-        turn_input(userGuess, count_num, input_index)
+        turn_input(userGuess, count_num)
 
         // 入力した内容をchatに出す-----------------------------------
         let item = document.createElement('li');
-        item.textContent = data['user'] + ' : ' + data['msg'];
-        chat.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
+
+        if (data['user'] === 1) {
+            item.textContent = data['msg'];
+            chat.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        } else {
+            item.textContent = data['msg'];
+            chat2.appendChild(item);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
     });
 
+
     // 交互に入力させる関数-------------------------------------
-    function turn_input(userGuess, count_num, input_index) {
+    // 最初のやつがcommitが動作しないから直す必要ある
+    function turn_input(userGuess, count_num) {
         if (first === user_s) {
-            if (count_num % input_index === 1) {
+            if (count_num % 2 === 1) {
                 turn.textContent = 'My Turn!';
                 guessField.disabled = false;
                 guessSubmit.disabled = false;
@@ -53,9 +61,10 @@ $(document).ready(function(){
                 turn.textContent = "Opponent's Turn!!";
                 guessField.disabled = true;
                 guessSubmit.disabled = true;
+                checkGuess(userGuess, count_num);
             }
         } else {
-            if (count_num % input_index === 0) {
+            if (count_num % 2 === 0) {
                 turn.textContent = 'My Turn!';
                 guessField.disabled = false;
                 guessSubmit.disabled = false;
@@ -64,30 +73,25 @@ $(document).ready(function(){
                 turn.textContent = "Opponent's Turn!!";
                 guessField.disabled = true;
                 guessSubmit.disabled = true;
+                checkGuess(userGuess, count_num);
             }
         }
     }
 
     function checkGuess(userGuess, count_num) {
-        if (count_num === 1) {
-            guesses.textContent = 'Previous guesses: ';
-        }
-
-        guesses.textContent += userGuess + ' ';
-
         if (userGuess === ans) {
             lastResult.textContent = 'Congratulations!';
             lastResult.style.backgroundColor = 'green';
             lowOrHi.textContent = '';
             setGameOver();
-        } else if (count_num === 10) {
+        } else if (count_num === 40) {
             // count_num===10で終了させるのは良くない(11回目移行が)　直す必要
             lastResult.textContent = '!!!GAME OVER!!!';
             lowOrHi.textContent = '';
             setGameOver();
         } else {
             lastResult.textContent = 'Wrong!';
-            lastResult.style.backgroudColor = 'red';
+            lastResult.style.backgroundColor = 'red';
             if (userGuess < ans) {
                 lowOrHi.textContent = 'Last guess was too low!';
             } else {

@@ -9,20 +9,37 @@
 </head>
 
 <body>
-
-    <p class="turn"></p>
-
-    <div class="resultParas">
-      <p class="guesses"></p>
-      <p class="lastResult"></p>
-      <p class="lowOrHi"></p>
+    <div class="title">
+        <h1>!!!Guess the Number!!!</h1>
+        <h3 class="subtitle">The room number is {{room}}</h3>
     </div>
 
-    <ul id="chat"></ul>
-    <form id="form" action="" class="guessField">
-        <input id="text">
-        <button class="guessSubmit">Send</button>
-    </form>
+    <div class="resultParas">
+        <p class="turn">!!!Turn!!!</p>
+        <p class="lastResult"></p>
+        <p class="lowOrHi"></p>
+    </div>
+
+
+    <div class="number_table">
+        <table>
+            <tr class="pattern-1">
+              <th>user1</th>
+              <th>user2</th>
+            </tr>
+            <tr>
+              <td><ul id="chat"></ul></td>
+              <td><ul id="chat2"></ul></td>
+            </tr>
+        </table>
+     </div>
+
+    <div class="form">
+        <form id="form" action="" class="guessField">
+            <input id="text" class="sbox">
+            <button class="guessSubmit">Send</button>
+        </form>
+    </div>
 
     <p>{{ans}}</p>
     <p>{{session}}</p>
@@ -32,7 +49,7 @@
 
     <script>
         var ans = JSON.parse('{{ ans | tojson }}');
-        var count = JSON.parse('{{ count | tojson }}');
+        var initial_count = JSON.parse('{{ count | tojson }}');
         var first = JSON.parse('{{ first | tojson }}');
         var user_s = JSON.parse('{{ user | tojson }}');
     </script>

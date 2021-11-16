@@ -111,14 +111,13 @@ def test():
         # 今はuser1に固定
         session['first'] = 1
         first = session['first']
-
         user = session['user_name']
-
         count = db.cursor(buffered=True)
         count.execute("SELECT count_num FROM Room WHERE session_room = %s", (session['room'],))
         count = count.fetchone()[0]
 
-        return render_template('socket.html', session=session, ans=ans, first=first, user=user, count=count)
+        room = session['room']
+        return render_template('socket.html', session=session, ans=ans, first=first, user=user, count=count, room=room)
 
     else:
         return redirect(url_for('/'))
@@ -147,8 +146,6 @@ def chat(message):
     cursor = db.cursor(buffered=True)
     cursor.execute("UPDATE Room SET count_num = %s WHERE session_room = %s", (count_num, room))
     db.commit()
-
-
 
     emit('message', {'msg': message['msg'], 'user': user, 'count_num':count_num}, room=room)
 
