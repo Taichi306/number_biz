@@ -130,6 +130,13 @@ def join(message):
     emit(room=room)
 
 
+@socketio.on('left', namespace='/socket')
+def left(message):
+    room = session['room']
+    leave_room(room)
+    session.clear()
+
+
 @socketio.on('text', namespace='/socket')
 def chat(message):
     room = session['room']

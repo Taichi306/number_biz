@@ -47,6 +47,18 @@
     <p>user is {{user}}</p>
 
 
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <p class="modal_win"></p>
+    <p class="modal_lose"></p>
+    <button type="button" onclick=leave_room()>Leave this Room</button>
+  </div>
+
+</div>
+
+
     <script>
         var ans = JSON.parse('{{ ans | tojson }}');
         var initial_count = JSON.parse('{{ count | tojson }}');
