@@ -32,8 +32,8 @@ def get_join_user(session):
     db = cdb()
     db_room = db.cursor(buffered=True)
     db_room.execute("SELECT join_user from Room where session_room = %s",(session,))
-    flag_room = db_room.fetchone()
-    return flag_room
+    num_user = db_room.fetchone()
+    return num_user
 
 
 # join_userに数を足す関数
@@ -63,15 +63,20 @@ def show_ans():
 @app.route('/', methods=['GET', 'POST'])
 def main():
     if request.method == 'POST':
-        room = request.form['room']
-        session['room'] = room
-        session['user_name'] = 0
-        flag_room = get_join_user(room)
-        if flag_room == None:
-            add_join_user(room, True)
-        else:
-            add_join_user(room, False)
-        return redirect('/wait')
+        try:
+            room = request.form['room']
+            session['room'] = room
+            session['user_name'] = 0
+            num_user = get_join_user(room)
+            if num_user == None:
+                add_join_user(room, True)
+            else:
+                add_join_user(room, False)
+            return redirect('/wait')
+
+        except:
+            msg='!!!Room Number must be int!!!'
+            return render_template('main.html', msg=msg)
     else:
         return render_template('main.html')
 
@@ -79,6 +84,8 @@ def main():
 @app.route('/wait', methods=['POST', 'GET'])
 def wait():
     # join_userが2になったらsocketに移行させる
+    db = cdb()
+    room = session['room']
     num_join = get_join_user(int(session['room']))[0]
     if num_join == 1:
         session['user_name'] = 1
@@ -88,6 +95,14 @@ def wait():
         else:
             session['user_name'] = 2
         return redirect('/socket')
+    if num_join >= 3:
+        num_join -= 1
+        cursor = db.cursor(buffered=True)
+        cursor.execute("UPDATE Room SET join_user = %s WHERE session_room = %s", (num_join, room))
+        db.commit()
+        msg = '!!!FULL!!!'
+        return render_template('wait.html', msg=msg)
+
     else:
         return render_template('wait.html', num_join=num_join)
 
@@ -115,8 +130,8 @@ def test():
         count = db.cursor(buffered=True)
         count.execute("SELECT count_num FROM Room WHERE session_room = %s", (session['room'],))
         count = count.fetchone()[0]
-
         room = session['room']
+
         return render_template('socket.html', session=session, ans=ans, first=first, user=user, count=count, room=room)
 
     else:
@@ -133,8 +148,24 @@ def join(message):
 @socketio.on('left', namespace='/socket')
 def left(message):
     room = session['room']
+    db = cdb()
+    count = db.cursor(buffered=True)
+    count.execute("SELECT join_user from Room where session_room = %s", (room,))
+    num_user = count.fetchone()[0]
+
+    if num_user == 2:
+        num_user -= 1
+        cursor = db.cursor(buffered=True)
+        cursor.execute("UPDATE Room SET join_user = %s WHERE session_room = %s", (num_user, room))
+        db.commit()
+    elif num_user == 1:
+        cursor = db.cursor(buffered=True)
+        cursor.execute("DELETE FROM Room WHERE session_room = %s", (room,))
+        db.commit()
+
     leave_room(room)
     session.clear()
+
 
 
 @socketio.on('text', namespace='/socket')

@@ -2,11 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/main.css">
     <title>Wait</title>
 </head>
 <body>
-<p>待機中</p>
-<p>待っている人は{{num_join}}人</p>
+    {% if msg %}
+    <div class="container6">
+        <h1>Oops!!! This room is {{msg}}</h1>
+            <img src ='../static/images/animation.gif' width="50" height="50"><img src ='../static/images/animation.gif' width="50" height="50"><img src ='../static/images/animation.gif' width="50" height="50">
+    </div>
+
+    {% else %}
+    <div class="container6">
+        <h1>waiting......</h1>
+        <h2>the number of waiting is {{num_join}}</h2>
+        <img src ='../static/images/animation.gif' width="50" height="50"><img src ='../static/images/animation.gif' width="50" height="50"><img src ='../static/images/animation.gif' width="50" height="50">
+    </div>
+    {% endif %}
 
 </body>
 </html>

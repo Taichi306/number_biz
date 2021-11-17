@@ -1,19 +1,18 @@
 var socket;
-$(document).ready(function(){
+// $(document).ready(function(){
     socket = io.connect('http://' + document.domain + ':' + location.port + '/socket');
 
     var chat = document.getElementById('chat');
     var text = document.getElementById('text');
     var form = document.getElementById('form');
-    let randomNumber = ans;
     const lastResult = document.querySelector('.lastResult');
     const lowOrHi = document.querySelector('.lowOrHi');
     const guessSubmit = document.querySelector('.guessSubmit');
     const guessField = document.querySelector('.guessField');
+    let turn = document.querySelector('.turn');
+    let randomNumber = ans;
     let guessCount = 1;
     let resetButton;
-
-    let turn = document.querySelector('.turn');
 
     socket.on('connect', function(){
         socket.emit('join', {});
@@ -22,7 +21,7 @@ $(document).ready(function(){
     function leave_room() {
         socket.emit('left', {}, function() {
             socket.disconnect();
-            window.location.href = "{{ url_for('/') }}";
+            window.location.href = "http://localhost:5000/";
         });
     }
 
@@ -90,13 +89,14 @@ $(document).ready(function(){
             lastResult.textContent = 'Congratulations!';
             lastResult.style.backgroundColor = 'green';
             lowOrHi.textContent = '';
-            open_modal(user);
-            setGameOver();
-        } else if (count_num === 40) {
+            open_modal(user, true);
+            // setGameOver();
+        } else if (count_num >=10) {
             // count_num===10で終了させるのは良くない(11回目移行が)　直す必要
             lastResult.textContent = '!!!GAME OVER!!!';
             lowOrHi.textContent = '';
-            setGameOver();
+            open_modal(user, false);
+            // setGameOver();
         } else {
             lastResult.textContent = 'Wrong!';
             lastResult.style.backgroundColor = 'red';
@@ -108,43 +108,50 @@ $(document).ready(function(){
         }
     }
 
-    function setGameOver() {
-        guessField.disabled = true;
-        guessSubmit.disabled = true;
-        resetButton = document.createElement('button');
-        resetButton.textContent = 'Start new game';
-        document.body.appendChild(resetButton);
-        resetButton.addEventListener('click', resetGame);
-    }
+    // function setGameOver() {
+    //     guessField.disabled = true;
+    //     guessSubmit.disabled = true;
+    //     resetButton = document.createElement('button');
+    //     resetButton.textContent = 'Start new game';
+    //     document.body.appendChild(resetButton);
+    //     resetButton.addEventListener('click', resetGame);
+    // }
 
-    function resetGame() {
-        guessCount = 1;
-        const resetParas = document.querySelectorAll('.resultParas p');
-        for(let i = 0 ; i < resetParas.length ; i++) {
-          resetParas[i].textContent = '';
-        }
+    // function resetGame() {
+    //     guessCount = 1;
+    //     const resetParas = document.querySelectorAll('.resultParas p');
+    //     for(let i = 0 ; i < resetParas.length ; i++) {
+    //       resetParas[i].textContent = '';
+    //     }
+    //
+    //     resetButton.parentNode.removeChild(resetButton);
+    //     guessField.disabled = false;
+    //     guessSubmit.disabled = false;
+    //     guessField.value = '';
+    //     guessField.focus();
+    //     lastResult.style.backgroundColor = 'white';
+    //     randomNumber = Math.floor(Math.random() * 100) + 1;
+    // }
 
-        resetButton.parentNode.removeChild(resetButton);
-        guessField.disabled = false;
-        guessSubmit.disabled = false;
-        guessField.value = '';
-        guessField.focus();
-        lastResult.style.backgroundColor = 'white';
-        randomNumber = Math.floor(Math.random() * 100) + 1;
-    }
-
-    function open_modal(user){
+    function open_modal(user, flag){
         let modal = document.getElementById('myModal');
-        let modal_win = document.querySelector('.modal_win');
-        let modal_lose = document.querySelector('.modal_lose');
-        if (user === user_s) {
-            modal_win.textContent = 'Congratulations!';
-            modal_win.style.backgroundColor = 'green';
+        if (flag === true) {
+            let modal_win = document.querySelector('.modal_win');
+            let modal_lose = document.querySelector('.modal_lose');
+            if (user === user_s) {
+                modal_win.textContent = 'Congratulations!';
+                modal_win.style.backgroundColor = 'green';
+            } else {
+                modal_lose.textContent = 'You Lost!';
+                modal_lose.style.backgroundColor = 'red';
+            }
+            modal.style.display = 'block';
         } else {
-            modal_lose.textContent = 'You Lost!';
-            modal_lose.style.backgroundColor = 'red';
+            let modal_failed = document.querySelector('.modal_failed');
+            modal_failed.textContent = '!!!FAILED!!!';
+            modal_failed.style.backgroundColor = 'red';
+            modal.style.display = 'block';
         }
-        modal.style.display = 'block';
     }
 
-});
+// });
